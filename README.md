@@ -35,8 +35,9 @@ Demonstrate your understanding of this Sprint's concepts by answering the follow
 - [ ] What steps can you take in your web apps to keep your data secure?
 	
 	One can make their web applications secure through simply:
+	
 		1.) establishing an Oauth framework in the backend that sends back authorization tokens to a user's device.
-		
+
 		2.) create protected routes within the application's navigation system that only directs a user to specific routes if they have an authorization token saved in their localStorage.
 			example of a PrivateRoute function:
 			const ProtectedRoutes = ({ component: Component, ...rest }) => {
