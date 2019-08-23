@@ -16,11 +16,32 @@ const ColorList = ({ colors, updateColors }) => {
     setColorToEdit(color);
   };
 
-  const saveEdit = e => {
+  const saveEdit = (e) => {
     e.preventDefault();
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    axiosWithAuth().put(`http://localhost:5000/api/colors/${colorToEdit.id}`, colorToEdit)
+      .then(res => {
+        console.log(res)
+        const colorsArray = [...colors]
+        for (let i=0; i < colorsArray.length; i++) {
+          //console.log(colorsArray[i].id)
+          if(colorsArray[i].id === colorToEdit.id) {
+            //console.log('color array', colorsArray[i]) 
+            // console.log('edited color', colorToEdit)
+            colorsArray[i].color = colorToEdit.color
+            colorsArray[i].code = colorToEdit.code 
+            colorsArray[i].id = colorToEdit.id
+            // console.log('colors array', colorsArray[i])
+          }
+        }
+        // console.log(colorsArray)
+        updateColors([...colorsArray])
+        
+      }) 
+      .catch(err => console.log(err))
+    
   };
 
   const deleteColor = color => {
