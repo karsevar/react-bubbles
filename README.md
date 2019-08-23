@@ -29,9 +29,78 @@ In this project you will create a login page and request a token from the server
 Demonstrate your understanding of this Sprint's concepts by answering the following free-form questions. Edit this document to include your answers after each question. Make sure to leave a blank line above and below your answer so it is clear and easy to read by your project manager.
 
 - [ ] Explain what a token is used for.
+
+	To begin, a token is a string passed by the server that gives a computer authentication credentials. These authentication credentials (which are coded into the headers of each axios call a the frontend application) allow or disallow specific users access to protected information. How this process translates to front end applications is that a login page takes in the payload of username and password. If the credentials exist, the server responds with a fresh JWT. From there it's the application's responsibility to add an authorization <token> header to every request (namely axios put, delete, post, and get requests).
+
 - [ ] What steps can you take in your web apps to keep your data secure?
+	
+	One can make their web applications secure through simply:
+		1.) establishing an Oauth framework in the backend that sends back authorization tokens to a user's device.
+		
+		2.) create protected routes within the application's navigation system that only directs a user to specific routes if they have an authorization token saved in their localStorage.
+			example of a PrivateRoute function:
+			const ProtectedRoutes = ({ component: Component, ...rest }) => {
+			    return (
+			      <Route
+			        {...rest}
+			        render={props => {
+			          if (localStorage.getItem("token")) {
+			            return <Component {...props} />;
+			          } else {
+			            return <Redirect to="/" />;
+			          }
+			        }}
+			      />
+			    );
+			  };
+
+		3.) Create a login page that has the ability to send an initial post request to the server with a user's username and password and send back an authorization token which is then saved to localStorage.
+			example of the login onSubmit handler:
+				const login = e => {
+			        e.preventDefault();
+			        setIsLoading(true)
+			        axios
+			            .post('http://localhost:5000/api/login', credentials) 
+			            .then(res => {
+			                setIsLoading(false)
+			                localStorage.setItem('token', res.data.payload)
+			                props.history.push('/friends')
+			            })
+			            .catch(err => {
+			                setIsLoading(false) 
+			                console.log(err.response)
+			            })
+	    		}
+
+		4.) lastly create an axiosWithAuth header function that has the token and use the function to for each ajax request to the application's api server. example of this function and the ajax setup:
+
+				For the token header function:
+				 export const axiosWithAuth = () => {
+				    const token = localStorage.getItem('token');
+
+				    return axios.create({
+				        headers: {
+				            'Content-Type': 'application/json',
+				            'Authorization': `${token}`
+				        },
+				    });
+				};
+
+				example of an ajax call using the above header function:
+				axiosWithAuth().post('http://localhost:5000/api/friends', friend)
+		            .then(res => console.log(res)) 
+		            .catch(err => console.log(err))
+
+
+
 - [ ] Describe how web servers work.
+
+	Web servers today operate through what's called the client-server model where each server provides functionality and programs to client devices. Server network are mostly implemented by the request response model where the client sends a request to the server and the servers do some action and send back the results (the results can be information for a webpage, the computations of a cloud computing service, etc.). 
+
 - [ ] Which HTTP methods can be mapped to the CRUD acronym that we use when interfacing with APIs/Servers.
+
+	To begin, CRUD stands for create, read, update, and delete. When overlaid with axios commands one can say that create means axios.post(), read means axios.get(), update means axios.put(), and delete (of course) means axios.delete().
+
 
 
 ## Project Set Up
